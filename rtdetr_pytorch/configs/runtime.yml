@@ -1,11 +1,11 @@
-sync_bn: True
+sync_bn: True # GPU lar ortak kullanılarak batch normalization yapacak.
 find_unused_parameters: False
 
 
 use_amp: False
 
 scaler:
-  type: GradScaler
+  type: GradScaler # Küçük gradyanların kaybolmasını engeller.
   enabled: True
 
 

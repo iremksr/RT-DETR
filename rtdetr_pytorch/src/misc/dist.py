@@ -93,6 +93,7 @@ def save_on_master(*args, **kwargs):
 
 
 
+# Bu fonksiyon modeli distributed mode'da çalışacak şekilde sarmalar
 def warp_model(model, find_unused_parameters=False, sync_bn=False,):
     if is_dist_available_and_initialized():
         rank = get_rank()

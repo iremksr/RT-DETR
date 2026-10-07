@@ -37,13 +37,13 @@ class BasicBlock(nn.Module):
     def __init__(self, ch_in, ch_out, stride, shortcut, act='relu', variant='b'):
         super().__init__()
 
-        self.shortcut = shortcut
+        self.shortcut = shortcut # Uyuşma olmazsa shortcut yapamazsın
 
         if not shortcut:
             if variant == 'd' and stride == 2:
                 self.short = nn.Sequential(OrderedDict([
-                    ('pool', nn.AvgPool2d(2, 2, 0, ceil_mode=True)),
-                    ('conv', ConvNormLayer(ch_in, ch_out, 1, 1))
+                    ('pool', nn.AvgPool2d(2, 2, 0, ceil_mode=True)), # Shortcut için önce pooling ile boyut küçült
+                    ('conv', ConvNormLayer(ch_in, ch_out, 1, 1)) # Sonra 1x1 conv ile channel sayısını ayarla
                 ]))
             else:
                 self.short = ConvNormLayer(ch_in, ch_out, 1, stride)
@@ -163,7 +163,7 @@ class PResNet(nn.Module):
         else:
             conv_def = [[3, ch_in, 7, 2, "conv1_1"]]
 
-        self.conv1 = nn.Sequential(OrderedDict([
+        self.conv1 = nn.Sequential(OrderedDict([ # Stagelere başlamadan önce bir aşama
             (_name, ConvNormLayer(c_in, c_out, k, s, act=act)) for c_in, c_out, k, s, _name in conv_def
         ]))
 

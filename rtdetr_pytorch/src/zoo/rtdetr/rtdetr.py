@@ -27,7 +27,7 @@ class RTDETR(nn.Module):
         
     def forward(self, x, targets=None):
         if self.multi_scale and self.training:
-            sz = np.random.choice(self.multi_scale)
+            sz = np.random.choice(self.multi_scale) # Modele farklı boyutlarda görseller vererek daha dayanıklı olmasını sağlıyor.
             x = F.interpolate(x, size=[sz, sz])
             
         x = self.backbone(x)

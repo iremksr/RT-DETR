@@ -40,16 +40,16 @@ class SetCriterion(nn.Module):
         """
         super().__init__()
         self.num_classes = num_classes
-        self.matcher = matcher
-        self.weight_dict = weight_dict
-        self.losses = losses 
+        self.matcher = matcher # Predicitonlarla ground-truthları eşleştirir
+        self.weight_dict = weight_dict # Lossların ağırlıkları örn: "loss_vfl": 1,"loss_bbox": 5,"loss_giou": 2 total_loss: 1xloss_vfl + 5xloss_bbox + 2xloss_giou
+        self.losses = losses # Hangi loss türlerini hesaplayacağım. Örn: losses = ['vfl', 'boxes']
 
         empty_weight = torch.ones(self.num_classes + 1)
-        empty_weight[-1] = eos_coef
-        self.register_buffer('empty_weight', empty_weight)
-
-        self.alpha = alpha
-        self.gamma = gamma
+        empty_weight[-1] = eos_coef # no-object sınıfına veirlen ağırlığı kontol için kullanılır.
+        self.register_buffer('empty_weight', empty_weight) # CPU dan GPU ya taşınacağı için buffer kullanıyorum.
+ 
+        self.alpha = alpha # Class/örnek ağırlıklandırmasıyla ilgili
+        self.gamma = gamma # Kolay/zor prediction'lara verilen ağırlığı değiştiren focusing parametresi
 
 
     def loss_labels(self, outputs, targets, indices, num_boxes, log=True):
@@ -59,11 +59,11 @@ class SetCriterion(nn.Module):
         assert 'pred_logits' in outputs
         src_logits = outputs['pred_logits']
 
-        idx = self._get_src_permutation_idx(indices)
-        target_classes_o = torch.cat([t["labels"][J] for t, (_, J) in zip(targets, indices)])
-        target_classes = torch.full(src_logits.shape[:2], self.num_classes,
+        idx = self._get_src_permutation_idx(indices) # Hungarian matcher'dan gelen eşleşmeler
+        target_classes_o = torch.cat([t["labels"][J] for t, (_, J) in zip(targets, indices)]) # Eşleşen GT'lerin classlarını alıyor.
+        target_classes = torch.full(src_logits.shape[:2], self.num_classes, # Başlangıçta hepsinin classını no-object yapıyor.
                                     dtype=torch.int64, device=src_logits.device)
-        target_classes[idx] = target_classes_o
+        target_classes[idx] = target_classes_o 
 
         loss_ce = F.cross_entropy(src_logits.transpose(1, 2), target_classes, self.empty_weight)
         losses = {'loss_ce': loss_ce}
@@ -75,13 +75,13 @@ class SetCriterion(nn.Module):
 
     def loss_labels_bce(self, outputs, targets, indices, num_boxes, log=True):
         src_logits = outputs['pred_logits']
-        idx = self._get_src_permutation_idx(indices)
+        idx = self._get_src_permutation_idx(indices) # indices:Hungarian metottan gelen eşleşmeler idx:eşeleşmiş querlylere erişmek için index
         target_classes_o = torch.cat([t["labels"][J] for t, (_, J) in zip(targets, indices)])
         target_classes = torch.full(src_logits.shape[:2], self.num_classes,
                                     dtype=torch.int64, device=src_logits.device)
-        target_classes[idx] = target_classes_o
+        target_classes[idx] = target_classes_o # Target classları alıyoruz.
 
-        target = F.one_hot(target_classes, num_classes=self.num_classes + 1)[..., :-1]
+        target = F.one_hot(target_classes, num_classes=self.num_classes + 1)[..., :-1] # One hot encoding yapıyor
         loss = F.binary_cross_entropy_with_logits(src_logits, target * 1., reduction='none')
         loss = loss.mean(1).sum() * src_logits.shape[1] / num_boxes
         return {'loss_bce': loss}
@@ -135,6 +135,7 @@ class SetCriterion(nn.Module):
         loss = loss.mean(1).sum() * src_logits.shape[1] / num_boxes
         return {'loss_vfl': loss}
 
+    # Gradyan hesaplanırken kullanılmaz. Sadece loglama yapar.
     @torch.no_grad()
     def loss_cardinality(self, outputs, targets, indices, num_boxes):
         """ Compute the cardinality error, ie the absolute error in the number of predicted non-empty boxes
@@ -149,6 +150,9 @@ class SetCriterion(nn.Module):
         losses = {'cardinality_error': card_err}
         return losses
 
+    # İki tane loss hesaplıyor:
+    # L1: koordinatların sayısal olarak yakınlığına bakıyor.
+    # GIoU: kutuların görüntü üzerinde geometrik olarak ne kadar iyi örtüştüğüne bakıyor.
     def loss_boxes(self, outputs, targets, indices, num_boxes):
         """Compute the losses related to the bounding boxes, the L1 regression loss and the GIoU loss
            targets dicts must contain the key "boxes" containing a tensor of dim [nb_target_boxes, 4]

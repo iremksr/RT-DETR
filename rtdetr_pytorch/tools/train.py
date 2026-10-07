@@ -3,7 +3,7 @@
 
 import os 
 import sys 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')) #
 import argparse
 
 import src.misc.dist as dist 
@@ -14,17 +14,35 @@ from src.solver import TASKS
 def main(args, ) -> None:
     '''main
     '''
-    dist.init_distributed()
-    if args.seed is not None:
+    dist.init_distributed() # Birden fazla gpu da distirbutd çalıştırmak için.
+    if args.seed is not None:  # Randomized işlerde reproducibility için seed belirlenmesi gerek.
         dist.set_seed(args.seed)
 
     assert not all([args.tuning, args.resume]), \
         'Only support from_scrach or resume or tuning at one time'
 
+    # FROM SCRATCH
+    # Modeli başlangıçtan eğit
+    #         ↓
+    # yeni training
+
+
+    # RESUME
+    # Aynı training'in checkpoint'ini yükle
+    #         ↓
+    # kaldığın yerden devam
+
+
+    # TUNING
+    # Önceden eğitilmiş ağırlıkları yükle
+    #         ↓
+    # yeni göreve/dataset'e yönelik
+    # yeni training
+
     cfg = YAMLConfig(
-        args.config,
+        args.config, # Direkt config dosyasını alır.
         resume=args.resume, 
-        use_amp=args.amp,
+        use_amp=args.amp, #AMP (Automtic Mixed Precision): Yarı hassasiyetli (16 bit) ve tam hassasiyetli (32 bit) hesaplamaları birleştirerek eğitim sürecini hızlandıran bir teknik.
         tuning=args.tuning
     )
 

@@ -3,25 +3,25 @@
 
 train_dataloader: 
   dataset: 
-    return_masks: False
+    return_masks: False # Training sırasında maskeleri döndürme.
     transforms:
       ops:
-        - {type: RandomPhotometricDistort, p: 0.5}
-        - {type: RandomZoomOut, fill: 0}
-        - {type: RandomIoUCrop, p: 0.8}
-        - {type: SanitizeBoundingBox, min_size: 1}
-        - {type: RandomHorizontalFlip}
-        - {type: Resize, size: [640, 640], }
+        - {type: RandomPhotometricDistort, p: 0.5} # Rastgele fotometrik bozulma uygulama olasılığı 0.5. Bu, görüntülerin renklerini ve parlaklıklarını rastgele değiştirerek modelin daha genel özellikler öğrenmesini sağlar.
+        - {type: RandomZoomOut, fill: 0} # Rastgele zoom out uygulama. Görüntüyü rastgele küçültür ve etrafını siyah (0) ile doldurur.
+        - {type: RandomIoUCrop, p: 0.8} # Rastgele IoU kırpma uygulama olasılığı 0.8. Bu, nesnelerin bir kısmını kırparak modelin daha dayanıklı hale gelmesini sağlar.
+        - {type: SanitizeBoundingBox, min_size: 1} # Sınır kutularını temizleme. Minimum boyut 1. Bu, çok küçük veya geçersiz sınır kutularını kaldırır.
+        - {type: RandomHorizontalFlip} # Rastgele yatay çevirme. Görüntüyü yatay olarak rastgele çevirir.
+        - {type: Resize, size: [640, 640], } # Görüntüyü 640x640 boyutuna yeniden boyutlandırır.
         # - {type: Resize, size: 639, max_size: 640}
         # - {type: PadToSize, spatial_size: 640}
-        - {type: ToImageTensor}
-        - {type: ConvertDtype}
-        - {type: SanitizeBoundingBox, min_size: 1}
-        - {type: ConvertBox, out_fmt: 'cxcywh', normalize: True}
+        - {type: ToImageTensor} # Görüntüyü PyTorch tensörüne dönüştürür.
+        - {type: ConvertDtype} # Görüntü verilerini uygun veri tipine dönüştürür.
+        - {type: SanitizeBoundingBox, min_size: 1} # Sınır kutularını temizleme. Minimum boyut 1. Bu, çok küçük veya geçersiz sınır kutularını kaldırır.
+        - {type: ConvertBox, out_fmt: 'cxcywh', normalize: True} # Sınır kutularını 'cxcywh' formatına dönüştürür ve normalize eder. Bu, modelin daha iyi öğrenmesini sağlar.
   shuffle: True
   batch_size: 4
   num_workers: 4
-  collate_fn: default_collate_fn
+  collate_fn: default_collate_fn # Batchleri birleştirmek için kullanılan fonksiyon. Bu, veri yükleyici tarafından çağrılır ve verileri modelin beklediği formata getirir.
 
 
 val_dataloader:

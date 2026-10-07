@@ -33,7 +33,7 @@ RandomCrop = register(T.RandomCrop)
 Normalize = register(T.Normalize)
 
 
-
+# Tüm operationları sırayla çalıitırır. Eğer ops boş ise, EmptyTransform döndürür.
 @register
 class Compose(T.Compose):
     def __init__(self, ops) -> None:
@@ -65,7 +65,7 @@ class EmptyTransform(T.Transform):
         inputs = inputs if len(inputs) > 1 else inputs[0]
         return inputs
 
-
+# Verilen girdileri boş bir dönüşüm uygulayarak döndürür.
 @register
 class PadToSize(T.Pad):
     _transformed_types = (

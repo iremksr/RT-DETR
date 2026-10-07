@@ -21,7 +21,7 @@ from src.core import register
 __all__ = ['RTDETRTransformer']
 
 
-
+# Küçük fully-connected ağlar oluşturur.
 class MLP(nn.Module):
     def __init__(self, input_dim, hidden_dim, output_dim, num_layers, act='relu'):
         super().__init__()
@@ -36,7 +36,7 @@ class MLP(nn.Module):
         return x
 
 
-
+# Cross attention yapısı
 class MSDeformableAttention(nn.Module):
     def __init__(self, embed_dim=256, num_heads=8, num_levels=4, num_points=4,):
         """
