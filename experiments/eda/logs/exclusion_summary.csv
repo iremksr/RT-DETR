@@ -1,0 +1,6 @@
+split,reason,count
+train,keep,343204
+train,excluded_category,10345
+train,invalid_bbox,1
+validation,keep,38759
+validation,excluded_category,1410
