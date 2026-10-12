@@ -172,8 +172,10 @@ rtdetrv2_pytorch/output/
 rtdetrv2_pytorch/dataset/
 
 
-# =========================
-# Datasets
-# =========================
-/datasets/
+
+# Dataset files
+/data/raw/
+/data/interim/
+/data/processed/
+/data/external/
 

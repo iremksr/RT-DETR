@@ -5,9 +5,9 @@ from pathlib import Path
 from PIL import Image
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-DATASETS_DIR = PROJECT_ROOT / "datasets"
-OUTPUT_DIR = DATASETS_DIR / "visdrone_coco"
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+RAW_DIR = PROJECT_ROOT / "data" / "raw"
+OUTPUT_DIR = PROJECT_ROOT / "data" / "processed" / "visdrone_coco"
 
 CATEGORIES = [
     "pedestrian",
@@ -37,7 +37,7 @@ EXPECTED = {
 
 
 def convert_split(split):
-    dataset_dir = DATASETS_DIR / f"VisDrone2019-DET-{split}"
+    dataset_dir = RAW_DIR / f"VisDrone2019-DET-{split}"
     image_dir = dataset_dir / "images"
     annotation_dir = dataset_dir / "annotations"
 

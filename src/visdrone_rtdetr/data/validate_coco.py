@@ -4,9 +4,9 @@ from pathlib import Path
 from collections import Counter
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-DATA_DIR = PROJECT_ROOT / "datasets" / "visdrone_coco"
-DATASETS_DIR = PROJECT_ROOT / "datasets"
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+DATA_DIR = PROJECT_ROOT / "data" / "processed" / "visdrone_coco"
+RAW_DIR = PROJECT_ROOT / "data" / "raw"
 
 EXPECTED = {
     "train": {
@@ -27,7 +27,7 @@ def validate_split(split):
     special_path = DATA_DIR / f"{split}_special.json"
 
     image_dir = (
-        DATASETS_DIR / f"VisDrone2019-DET-{split}" / "images"
+        RAW_DIR / f"VisDrone2019-DET-{split}" / "images"
     )
 
     with open(json_path, "r", encoding="utf-8") as f:

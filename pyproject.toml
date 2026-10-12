@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "visdrone-rtdetr"
+version = "0.1.0"
+description = "VisDrone object detection experiments using RT-DETR"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy",
+    "pandas",
+    "Pillow",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["visdrone_rtdetr*"]
