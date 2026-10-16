@@ -1,0 +1,36 @@
+# Python sanal ortamları
+**/.venv/
+**/venv/
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+
+# Git ve sistem dosyaları
+.git/
+.gitignore
+.DS_Store
+.vscode/
+
+# Veri setleri
+data/
+rtdetr_pytorch/dataset/
+
+# Model ağırlıkları
+checkpoints/
+rtdetr_pytorch/weights/
+
+# Eğitim çıktıları
+output/
+rtdetr_pytorch/output/
+
+# Projede Docker için gerekmeyen klasörler
+notebooks/
+reports/
+benchmark/
+rtdetr_paddle/
+rtdetrv2_paddle/
+rtdetrv2_pytorch/
+
+# Geçici dosyalar
+**/*.log
+**/.ipynb_checkpoints/

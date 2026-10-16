@@ -1,0 +1,19 @@
+services:
+  rtdetr-train:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    image: rtdetr-pcb:latest
+
+    working_dir: /workspace/rtdetr_pytorch
+
+    gpus: all
+    shm_size: "8gb"
+
+    volumes:
+      - ./data:/workspace/data:ro
+      - ./checkpoints:/workspace/checkpoints:ro
+      - ./output:/workspace/rtdetr_pytorch/output
+
+    command: bash

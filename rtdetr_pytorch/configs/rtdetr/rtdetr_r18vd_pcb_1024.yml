@@ -1,0 +1,91 @@
+__include__: [
+  '../dataset/coco_detection.yml',
+  '../runtime.yml',
+  './include/dataloader.yml',
+  './include/optimizer.yml',
+  './include/rtdetr_r50vd.yml',
+]
+
+output_dir: ./output/rtdetr_r18vd_pcb_1024
+
+task: detection
+num_classes: 6
+remap_mscoco_category: False
+
+PResNet:
+  depth: 18
+  freeze_at: -1
+  freeze_norm: False
+  pretrained: True
+
+HybridEncoder:
+  in_channels: [128, 256, 512]
+  hidden_dim: 256
+  expansion: 0.5
+  eval_spatial_size: [1024, 1024]
+
+RTDETRTransformer:
+  eval_idx: -1
+  num_decoder_layers: 3
+  num_denoising: 100
+  eval_spatial_size: [1024, 1024]
+
+RTDETR:
+  multi_scale: [1024]
+
+train_dataloader:
+  dataset:
+    img_folder: ../data/processed/pcb_mirror_rtdetr_1024_v2/
+    ann_file: ../data/processed/pcb_mirror_rtdetr_1024_v2/annotations/instances_train.json
+    transforms:
+      ops:
+        - {type: RandomPhotometricDistort, p: 0.5}
+        - {type: RandomHorizontalFlip}
+        - {type: Resize, size: [1024, 1024]}
+        - {type: ToImageTensor}
+        - {type: ConvertDtype}
+        - {type: SanitizeBoundingBox, min_size: 1}
+        - {type: ConvertBox, out_fmt: 'cxcywh', normalize: True}
+  batch_size: 1
+  num_workers: 0
+  drop_last: False
+
+val_dataloader:
+  dataset:
+    img_folder: ../data/processed/pcb_mirror_rtdetr_1024_v2/
+    ann_file: ../data/processed/pcb_mirror_rtdetr_1024_v2/annotations/instances_val.json
+    transforms:
+      ops:
+        - {type: Resize, size: [1024, 1024]}
+        - {type: ToImageTensor}
+        - {type: ConvertDtype}
+  batch_size: 1
+  num_workers: 0
+
+sync_bn: False
+find_unused_parameters: False
+
+use_amp: False
+use_ema: False
+
+epoches: 30
+clip_max_norm: 0.1
+
+optimizer:
+  type: AdamW
+  params:
+    - params: '^(?=.*backbone)(?=.*norm).*$'
+      lr: 0.00001
+      weight_decay: 0.
+    - params: '^(?=.*backbone)(?!.*norm).*$'
+      lr: 0.00001
+    - params: '^(?=.*(?:encoder|decoder))(?=.*(?:norm|bias)).*$'
+      weight_decay: 0.
+  lr: 0.0001
+  betas: [0.9, 0.999]
+  weight_decay: 0.0001
+
+lr_scheduler:
+  type: MultiStepLR
+  milestones: [25]
+  gamma: 0.1

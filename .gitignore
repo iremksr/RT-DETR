@@ -172,10 +172,32 @@ rtdetrv2_pytorch/output/
 rtdetrv2_pytorch/dataset/
 
 
-
 # Dataset files
 /data/raw/
 /data/interim/
 /data/processed/
 /data/external/
 
+# Docker image arşivleri
+*.tar
+*.tar.gz
+
+# Python ortamı
+.venv/
+**/.venv/
+__pycache__/
+*.pyc
+
+# PCB veri seti
+/data/
+
+# Eğitim çıktıları
+/output/
+/rtdetr_pytorch/output/
+
+# Model ağırlıkları
+/checkpoints/
+/rtdetr_pytorch/weights/
+
+# Sistem dosyaları
+.DS_Store
